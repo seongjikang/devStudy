@@ -53,4 +53,23 @@ public class Member {
     public void setTeam(Team team) {
         this.team = team;
     }
+
+    //연관관계 편의 메서드
+    // 실제로는 이렇게 간단하지 않음 , 진짜 있냐 없냐 등의 null 체크도 해줘야하고 ...
+    // 또 주인 (member) 입장에서는 기존에 있던 날 빼고 넣어주고 하는 걸 해줘야함 ..
+    /*
+    public void changeTeam(Team team) {
+        this.team = team;
+        // 이렇게 해주면된다. 이걸 연관관계 편의 메서드라고 호칭함
+        team.getMembers().add(this);
+    }*/
+
+//    @Override
+//    public String toString() {
+//        return "Member{" +
+//                "id=" + id +
+//                ", userName='" + userName + '\'' +
+//                ", team=" + team +
+//                '}';
+//    }
 }
