@@ -1,6 +1,8 @@
 package test.myteam.domain;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Member {
@@ -31,6 +33,18 @@ public class Member {
     @OneToOne
     @JoinColumn(name = "LOCKER_ID")
     private Locker locker;
+
+    // 다대다 관계
+    // 편해보이지만 ... 실무에서 사용할수가 없다.
+    // 연결만 할리가 없다/ 중간 테이블에 이것저것 주문시간 수량 같은 것들이 들어갈수가 있어서... 굉장히 복잡해진다.
+    // 그래서 중간 테이블을 엔티티로 승격해서 사용하는게 옳다고 생각함 ..
+    //@ManyToMany
+    //@JoinTable(name = "MEMBER_PRODUCT")
+    //private List<Product> products = new ArrayList<>();
+
+    // 엔티티로 승격된 중간테이블을 리스트로 잡아줌..
+    @OneToMany(mappedBy = "member")
+    private List<MemberProduct> memberProducts = new ArrayList<>();
 
     public Member() {
     }
