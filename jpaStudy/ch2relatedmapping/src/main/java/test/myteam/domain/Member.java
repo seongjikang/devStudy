@@ -17,6 +17,11 @@ public class Member {
     @JoinColumn(name = "TEAM_ID")
     private Team team;
 
+    // 일대다 양방향 관계 만드는 방법 .. 잘 안쓰는듯 ... 알아만 두자.
+    //@ManyToOne
+    //@JoinColumn(name = "TEAM_ID", insertable = false, updatable = false) // 두개를 넣어서 .. 읽기전용으로 만들어줘야... 연관관계의 주인이 아니게 해줌, 공식방법은 아님
+    //private Team team;
+
     //객체 지향 설계에 어긋나는 방식
     //@Column(name = "TEAM_ID")
     //private Long teamId;
