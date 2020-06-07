@@ -16,6 +16,12 @@ public class Team {
     @OneToMany(mappedBy = "team")
     private List<Member> members = new ArrayList<>();
 
+    //1대다 관계를 표현하고자 할때 ... 실무에서는 잘 안씀
+    //객체지향적인 손해를 보더라도 .. 다대일 양방향으로 만들어서 .. 사용하는게 낫다.
+    //@OneToMany
+    //@JoinColumn(name = "MEMBER_ID") // 이거 만약 제외 해버리면 ... Join Table 이 생긴다. 성능/운영 상 안좋다 ..
+    //private List<Member> members = new ArrayList<>();
+
     public Team() {
     }
 
