@@ -19,12 +19,18 @@ public class Member {
 
     // 일대다 양방향 관계 만드는 방법 .. 잘 안쓰는듯 ... 알아만 두자.
     //@ManyToOne
-    //@JoinColumn(name = "TEAM_ID", insertable = false, updatable = false) // 두개를 넣어서 .. 읽기전용으로 만들어줘야... 연관관계의 주인이 아니게 해줌, 공식방법은 아님
-    //private Team team;
+    //@JoinColumn(name = "TEAM_ID", insertable = false, updatable = false) // 두개를 넣어서 .. 읽기전용으로 만들어줘야... 연관관계의 주인이 아니게 해줌, 공식방법은 아님님
+   //private Team team;
 
     //객체 지향 설계에 어긋나는 방식
     //@Column(name = "TEAM_ID")
     //private Long teamId;
+
+    //일대일 관계
+    //Member에 Locker가 있는게 ... 비지니스 로직상 좋다. db쿼리 한방으로 lOCKER 값이 있는지 조회가 가능하니깐..
+    @OneToOne
+    @JoinColumn(name = "LOCKER_ID")
+    private Locker locker;
 
     public Member() {
     }
