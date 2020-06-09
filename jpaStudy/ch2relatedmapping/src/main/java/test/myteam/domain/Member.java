@@ -1,11 +1,12 @@
 package test.myteam.domain;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class Member {
+public class Member extends BaseEntity{
     @Id
     @GeneratedValue
     @Column(name = "MEMBER_ID")
@@ -45,6 +46,13 @@ public class Member {
     // 엔티티로 승격된 중간테이블을 리스트로 잡아줌..
     @OneToMany(mappedBy = "member")
     private List<MemberProduct> memberProducts = new ArrayList<>();
+
+    //MappedSuperClass  예를 위해 만든 멤버변수
+    // 이런게 모든 변수에 다들어간다고 가정해보자 .. 이속성만 상속받아 사용할 수는 없을까에서 나온 개념임
+//    private String createdBy;
+//    private LocalDateTime createDate;
+//    private String modifiedBy;
+//    private LocalDateTime lastModifiedDate;
 
     public Member() {
     }
