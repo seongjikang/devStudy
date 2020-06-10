@@ -15,8 +15,14 @@ public class Member extends BaseEntity{
     @Column(name = "USER_NAME")
     private String userName;
 
+    // ManyToOne OneToOne : 기본이 EAGER -> 수동으로 LAZY 해주자..
+    // OneToMany, ManyToMany : 기본 lAZY -> 그대로 사용하면됨
+
     //Member 입장에서 Many , Team 입장에서 One
-    @ManyToOne
+    //@ManyToOne(fetch = FetchType.EAGER) // 이렇게 해두면 실제 DB에서 Entity 조회, 실무에서는 즉시로딩을 사용해서는 안된다 .. 라는 결론 .. 경험에서 우러나오는 ..
+    // 왜지?? 즉시로딩은 .. 예상치 못한 SQL 이 발생... 정말 테이블이 커지면 커질수록 .... 엄청난 쿼리를 볼수 있을 것이다..
+    // 그리고 즉시로딩은 jpql 에서 N+1 문제를 일으킴 .. !
+    @ManyToOne(fetch = FetchType.LAZY) //이렇게 해두면 Proxy로 조회, 멤버클래스만 db에서 조회 해옴 , 기본으로는 즉시로딩이 세팅 .. OneToOne 도 마찬가지 ... (발라줘야함)
     @JoinColumn(name = "TEAM_ID")
     private Team team;
 
