@@ -4,6 +4,8 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static javax.persistence.FetchType.*;
+
 @Entity
 public class Category extends BaseEntity{
     @Id
@@ -12,7 +14,8 @@ public class Category extends BaseEntity{
 
     private String name;
 
-    @ManyToOne
+    //ManyToOne, OneToOne 지연 전략 써주자 !
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "PARENT_ID")
     private Category parent;
 
@@ -20,7 +23,7 @@ public class Category extends BaseEntity{
     private List<Category> child = new ArrayList<>();
 
     // 이부분이 ..중간 테이블 만들어주는 부분
-    @ManyToMany
+    @ManyToMany // 얘는 기본이 .. LAZY 임
     @JoinTable(name = "CATEGORY_ITEM",
         joinColumns = @JoinColumn(name = "CATEGORY_ID"),
         inverseJoinColumns = @JoinColumn(name = "ITEM_ID")
