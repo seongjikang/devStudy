@@ -10,11 +10,13 @@ public class Delivery {
     @GeneratedValue
     private Long id;
 
-    private String city;
-    private String street;
-    private String zipcode;
-    private DeliveryStatus status;
+//    private String city;
+//    private String street;
+//    private String zipcode;
+    @Embedded
+    private Address address;
 
+    private DeliveryStatus status;
 
     @OneToOne(mappedBy = "delivery", fetch = LAZY)
     private Order order;
