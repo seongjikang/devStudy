@@ -73,6 +73,7 @@ public class JpaMain {
 			//이름 기준 말고 위치기준으로도 사용하곤 하는데 ... 사용하지말자 !
 			// 밀려버리는 장애가 날수도 있다..!
 
+
 			et.commit();
 		} catch (Exception e) {
 			et.rollback();
