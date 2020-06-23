@@ -1,6 +1,7 @@
 package test.onlineshop;
 
 import test.onlineshop.domain.Book;
+import test.onlineshop.domain.Item;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -21,6 +22,9 @@ public class OnlineShopMain {
 			book.setAuthor("Knag");
 
 			em.persist(book);
+
+			// 다형성이 잘 녹아있는 코드에서 ... 검색시 .. !
+			em.createQuery("select i from Item i where type(i) = Book", Item.class).getResultList();
 
 			et.commit();
 		} catch (Exception e) {
