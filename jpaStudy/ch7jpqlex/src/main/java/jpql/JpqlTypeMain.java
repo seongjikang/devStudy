@@ -52,6 +52,26 @@ public class JpqlTypeMain {
 				System.out.println("objects = " +objects[2]);
 			}
 
+			// 조건신 관련 쿼리
+
+			String query1 =
+							"select " +
+							"case when m.age <= 10 then '학생요금' " +
+							"     when m.age >= 60 then '경로요금' " +
+							"     else '일반요금' end " +
+							"from Member m ";
+
+			List<String> result1 = em.createQuery(query1, String.class).getResultList();
+
+			for(String s : result1) {
+				System.out.println("s = " + s);
+			}
+
+			// COALESCE : 하니씩 조회에서 NULL이 아니면 반환
+			String query2 = "select coalesce(m.userName, '이름없음') as nm from Member m";
+			// NULLIF : 두값이 같으면 NULL 반환 다르면 첫번째값 반환
+			String query3 = "select nullif(m.userName, '관리자') as nm from Member m";
+
 			et.commit();
 		} catch (Exception e) {
 			et.rollback();
