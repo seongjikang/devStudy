@@ -50,7 +50,6 @@ public class JpqlFunctionMain {
 //				System.out.println("s = " + s);
 //			}
 
-
 			// 사용자정의함수
 			String customFunction = "select function('group_concat', m.userName) from Member m";
 			List<String> result = em.createQuery(customFunction , String.class).getResultList();
