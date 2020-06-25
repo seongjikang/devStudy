@@ -43,3 +43,12 @@ hs_err_pid*
 log/
 target/
 **/target/
+
+# Gradle
+.gradle
+/build/
+**/build/
+!src/**/build/
+gradle-app.setting
+!gradle-wrapper.jar
+.gradletasknamecache
