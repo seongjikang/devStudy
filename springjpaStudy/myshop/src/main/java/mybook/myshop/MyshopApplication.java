@@ -7,9 +7,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class MyshopApplication {
 
 	public static void main(String[] args) {
-		Test test = new Test();
-		test.setData("hi");
-		System.out.println(test.getData());
+//		Test test = new Test();
+//		test.setData("hi");
+//		System.out.println(test.getData());
 		SpringApplication.run(MyshopApplication.class, args);
 	}
 
