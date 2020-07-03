@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class HelloController {
 
-	@GetMapping("/hello")
+	@GetMapping("hello")
 	public String hello(Model model) {
 		model.addAttribute("data","hello");
 		// 여기 리턴은 관례상 뷰이름
