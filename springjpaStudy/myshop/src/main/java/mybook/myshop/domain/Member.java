@@ -7,9 +7,8 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
 @Getter @Setter
-
-
 public class Member {
 
 	@Id
