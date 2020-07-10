@@ -25,5 +25,7 @@ public class Member {
 	// 읽기전용이 됨..
 	@OneToMany(mappedBy = "member")
 	private List<Order> orders = new ArrayList<>();
+	// 위의 방식처럼 리스트는 생성해주는게 베스트 프렉티스다 기억하자.
+	// 이컬렉션을 바꾸지말자 ! 그냥쓰자..! 하이버네이트가 원하는 메커니즘으로 동작시키기 위해서
 
 }
