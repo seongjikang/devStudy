@@ -2,7 +2,7 @@ package mybook.myshop.domain.item;
 
 import lombok.Getter;
 import lombok.Setter;
-import mybook.myshop.Category;
+import mybook.myshop.domain.Category;
 
 import javax.persistence.*;
 import java.util.ArrayList;
