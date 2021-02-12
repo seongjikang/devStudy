@@ -1,0 +1,30 @@
+spring:
+# Spring 에서는 아래께 없으면 그냥 메모리 모드로 돌려버림
+#  datasource:
+#    url: jdbc:h2:mem:test
+#    username: sa
+#    pasword:
+#    driver-class-name: org.h2.Driver
+
+#  thymeleaf:
+#    cache: false
+#    prefix: classpath:/templates/
+
+#  resources:
+#     static-locations: classpath:/static/
+
+#  jpa:
+#    hibernate:
+#      ddl-auto: create
+#   properties:
+#      hibernate:
+#        show_sql: true
+#        format_sql: true
+
+server:
+  port: 9080
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type: trace

@@ -23,7 +23,7 @@ public class MemberRepository {
     //@Autowired
 
     // 그래서 이것도 마찬가지로... 생성자 injection 쓰면 참좋음
-    private EntityManager em;
+    private final EntityManager em;
 
     public void save(Member member) {
         em.persist(member);
