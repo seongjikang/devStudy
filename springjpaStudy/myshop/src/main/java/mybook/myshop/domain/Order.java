@@ -22,6 +22,8 @@ public class Order {
 	private Long id;
 
 	//ManyToOne 은 기본 패치 전략이 ... EAGER임 .. LAZY 꼭 명시 해줘야함 ..! OneToOne도 해주자..!
+	// n+1 -> 멤버를 가져오기 위해 n +1 번만큼 쿼리가 날라가는 문제가 발생...
+	// 난리가 난다.
 	@ManyToOne(fetch = LAZY)
 	@JoinColumn(name = "member_id")
 	private Member member;
@@ -29,6 +31,7 @@ public class Order {
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
 	private List<OrderItem> orderItems = new ArrayList<>();
 
+	//cascade가 persist를 전파하게 해줌 ... !
 	//persist(orderItemA)
 	//persist(orderItemB)
 	//persist(orderItemC)
@@ -38,6 +41,7 @@ public class Order {
 	//persist(order)
 
 	// Order를 접근할일이 더 많기때문에 ... FK키를 Order에 두는게 좋다..! 연관관계 주인은 Order에 있는 delivery로 하자 !
+	// 얘도 마찬가지로 order 만 persist 해주면 delivery 까지 같이 persist 가 됨 ..
 	@OneToOne(fetch = LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name ="delivery_id")
 	private Delivery delivery;
@@ -73,4 +77,6 @@ public class Order {
 		this.delivery =delivery;
 		delivery.setOrder(this);
 	}
+
+	// 연관관계 편의 메서드의 경우 핵심적으로 컨트롤 할 수 있는 곳에 있는게 좋다.
 }
