@@ -11,6 +11,10 @@ import java.util.List;
 @Getter @Setter
 public class Member {
 
+	//영속성 컨텍스트에 의해 persist 되면 아래 id는  항상 생성이 되어 있는걸 보장할 수가 있다.
+	//그래서 em.persist 하면 항상 값이 아래 id에는 박혀서 들어가게됨
+	// 왜냐면 영속성 컨텍스트에 값을 넣어야하는데 이떼 구조가 항상 키, 밸류가 되는데
+	// 여기서 키가 pk id 가됨, db에 들어가기전에도 이렇게 세팅해줌
 	@Id
 	@GeneratedValue
 	@Column(name = "member_id")
