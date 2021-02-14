@@ -1,6 +1,8 @@
 package mybook.myshop.domain;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -10,9 +12,13 @@ import java.util.List;
 
 import static javax.persistence.FetchType.*;
 
+// 코드를 도메인 모델 패턴으로 짬
+// 핵심 로직은 Entity 에 있고, Service에는 단순 위임 하는 형태로 짬 (ORM 기술에서는 도메인 모델 패턴이 나음)
+// 반대로 서비스 계층에 비지니스로직이 있으면 트랜잭션 스크립트 패턴이라고 함 (MyBatis 같은 거에 어울림)
 @Entity
 @Table(name = "orders")
 @Getter @Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Order {
 	// 연관관계주인은 Foreign Key 가 가까운곳
 	// 그래서 Order 가 연관관계 주인이 되면 될듯
@@ -79,4 +85,47 @@ public class Order {
 	}
 
 	// 연관관계 편의 메서드의 경우 핵심적으로 컨트롤 할 수 있는 곳에 있는게 좋다.
+
+	//생성 메서드
+	// Order가 연관관계를 쏵 걸면서 생성
+	// 이렇게 하면 생성관련 변경은 여기서만해주면됨
+	// 원래 실무에서는 DTO 같은 형태로 파라미터로 들어와서, orderItem이 내부에서 생성되서 처리되는게 맞음
+	public static Order createOrder(Member member, Delivery delivery, OrderItem... orderItems) {
+		Order order = new Order();
+		order.setMember(member);
+		order.setDelivery(delivery);
+		for(OrderItem orderItem :orderItems) {
+			order.addOrderItem(orderItem);
+		}
+		order.setStatus(OrderStatus.ORDER);
+		order.setOrderDate(LocalDateTime.now());
+		return order;
+	}
+
+	// 비지니스 로직
+	// 주무취소
+	public void cancel() {
+		if(delivery.getStatus() == DeliveryStatus.COMP) {
+			throw new IllegalStateException("이미 배송완료된 상품임");
+		}
+
+		this.setStatus(OrderStatus.CANCEL);
+		for(OrderItem orderItem : orderItems) {
+			orderItem.cancel();
+		}
+	}
+
+	// 조회 로직
+	// 전체 주문가격 조회
+	public int getTotalPrice( ) {
+//		int totalPrice =0;
+//		for(OrderItem orderItem : orderItems) {
+//			totalPrice += orderItem.getTotalPrice();
+//		}
+
+		int totalPrice = orderItems.stream()
+				.mapToInt(OrderItem::getTotalPrice)
+				.sum();
+		return totalPrice;
+	}
 }
