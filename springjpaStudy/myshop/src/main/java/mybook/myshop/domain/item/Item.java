@@ -11,7 +11,7 @@ import java.util.List;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@Getter //@Setter
+@Getter @Setter
 public abstract class Item {
 
 	@Id
@@ -30,7 +30,7 @@ public abstract class Item {
 	//setter를 쓰지 않고 필요에 따라 비지니스로직을 만들어 주는것 ..! 이게 바로 객체지향이지지
 	// 재고 수량 증가하는 비지니스 로직을 추가
 	public void addStock(int quantity) {
-		this.stockQuantity = quantity;
+		this.stockQuantity += quantity;
 	}
 
 	// 재고 수량 감소하는 비지니스 로직 추가
