@@ -15,7 +15,7 @@ import javax.validation.Valid;
 @Controller
 @RequiredArgsConstructor
 public class MemberController {
-    private final MemberService memberServce;
+    private final MemberService memberService;
 
     @GetMapping("/members/new")
     public String createForm(Model model) {
@@ -23,7 +23,7 @@ public class MemberController {
         return "members/createMemberForm";
     }
 
-
+    // error 나와도 form 데이터는 그대로 유지
     // BindingResult 가 있으면 오류가 발견 되면 코드내에서 실행을 한다.
     @PostMapping("/members/new")
     public String create(@Valid MemberForm form, BindingResult result) {
@@ -32,13 +32,20 @@ public class MemberController {
             return "members/createMemberForm";
         }
 
-        Address address = new Address(form.getCity(), form.getStreet(), form.getZipcode());
-
         Member member = new Member();
         member.setName(form.getName());
-        member.setAddress(address);
+        member.setAddress(new Address(form.getCity(), form.getStreet(), form.getZipcode()));
 
-        memberServce.join(member);
+        memberService.join(member);
         return "redirect:/";
+    }
+
+    @GetMapping("/members")
+    public String list(Model model) {
+        // 이 부분도 화면에 렌더링 할때는  dto로 변환해서 해주는게 실무에서 ... !
+        // 특히 api를 만들때는 절대로 entity를 넘겨서는 안됨 (외부로...!)
+        // 예를 들어서 entity에 비밀번호가 있다고 생각해보면 이해가 될 것
+        model.addAttribute("members", memberService.findMembers());
+        return "members/memberList";
     }
 }
