@@ -9,6 +9,7 @@ import mybook.myshop.domain.item.Item;
 import mybook.myshop.repository.ItemRepository;
 import mybook.myshop.repository.MemberRepository;
 import mybook.myshop.repository.OrderRepository;
+import mybook.myshop.repository.OrderSearch;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,7 +63,7 @@ public class OrderService {
     }
 
     // 주문 검색
-//    public List<Order> findOrders(OrderSearch orderSearch) {
-//        return orderRepository.findAll(orderSearch)
-//    }
+    public List<Order> findOrders(OrderSearch orderSearch) {
+        return orderRepository.findAllByString(orderSearch);
+    }
 }
