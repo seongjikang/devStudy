@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +21,11 @@ public class Member {
 	@Column(name = "member_id")
 	private Long id;
 
+	//이렇게 넣는게 나쁜건 아닌데 ...
+	// presentation 계층의 검증로직이 .. entity에 들어온다는게 ... 흠 ....
+	// 그리고 이 값이 바뀌어 버리면 ... 흠 ... 나중에 api 스펙이 바껴버림 ...
+	// 그래서 별도의 dto를 만드는게 좋다
+	@NotEmpty
 	private String name;
 
 	@Embedded
