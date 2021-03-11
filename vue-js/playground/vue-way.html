@@ -16,17 +16,29 @@
         //     // 정의할 내용
         // })
 
-        Object.defineProperty(viewModel, 'str', {
-            // 속성에 접근했을때 동작을 정의
-            get: function() {
-                console.log('접근');
-            },
-            // 속성에 값을 할당했을 때 동ㅈ작을 정의
-            set: function(newValue) {
-                console.log('할당', newValue);
-                div.innerHTML = newValue;
+        //즉시실행함수
+        (function() {
+            function init() {
+                Object.defineProperty(viewModel, 'str', {
+                    // 속성에 접근했을때 동작을 정의
+                    get: function () {
+                        console.log('접근');
+                    },
+                    // 속성에 값을 할당했을 때 동ㅈ작을 정의
+                    set: function (newValue) {
+                        console.log('할당', newValue);
+                        render(newValue)
+                    }
+                });
             }
-        })
+
+            function render(value) {
+                div.innerHTML = value;
+            }
+
+            init();
+        })();
+        
     </script>
 </body>
 </html>
