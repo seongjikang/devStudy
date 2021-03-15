@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <div>
+            <router-link to="/login">Login</router-link>
+            <!--위에는 <a href="/login">Login</a> 처럼 나올거윔-->
+            <router-link to="/main">Main</router-link>
+        </div>
+        <!--router 내부에서 쓸수있는 view임-->
+        <router-view></router-view>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+
+    <script>
+        var LoginComponent = {
+            template: '<div>login</div>'
+        }
+
+        var MainComponent = {
+            template: '<div>main</main>'
+        }
+
+        var router = new VueRouter({
+            // url 해쉬 없애고 싶을때
+            mode: 'history',
+            //페이징 라우팅 정보
+            routes: [
+                //페이지의 갯수만큼 객체가 필요함
+                {
+                    //페이지의 url 이름
+                    path: '/login',
+                    //얘는 지금 해봤자 적용안됨 .. 나중에 적용할거임
+                    //name: 'login',
+                    // 해당 url에서 표시될 컴포넌트 (화면에 뿌려질...)
+                    component: LoginComponent
+                },
+                {
+                    path: '/main',
+                    component: MainComponent
+                }
+            ]
+        });
+
+        new Vue({
+            el: '#app',
+            // 여기 router는 기존에 있는 게 아님
+            router: router // 이게 없으면 에러가 뜰꺼임
+        });
+    </script>
+</html>
