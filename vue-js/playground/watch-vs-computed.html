@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                num: 10
+            },
+            computed: {
+                // 조금 가벼운 로직들 , 매번 실행되도 상관없는 로직들은 ...
+                // validate 같은 가벼운것들
+                doubleNum: function() {
+                    return this.num *2;
+                }
+            },
+            watch: {
+                // 얘는 매번실행되기 무거운 , 무담되는 로직을 ..
+                // 실제 서버랑 통신하는 ..
+                num: function(newValue, oldValue) {
+                    this.fetchUserByNumber(newValue);
+                }
+            },
+            methods: {
+                fetchUserByNumber: function(num) {
+                    console.log(num);
+                    //axios.get(num);
+                }
+            }
+        })
+    </script>
+</body>
+</html>
