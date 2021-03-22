@@ -30,9 +30,9 @@
                     var vm = this;
                     axios.get('https://jsonplaceholder.typicode.com/users')
                         .then(function(response) { // 성공하면
-                            //console.log(response.data);
+                            console.log(response.data);
                             // 여기서 호출되는 this는 다름
-                            console.log(this);
+                            //console.log(this);
                             // 실행 컨텍스트가 다름
                             //this.users = response.data;
                             vm.users = response.data;
