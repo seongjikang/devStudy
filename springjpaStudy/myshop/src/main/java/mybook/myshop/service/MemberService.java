@@ -78,4 +78,12 @@ public class MemberService {
     public Member findOne(Long memberId) {
         return memberRepository.findOne(memberId);
     }
+
+    // jpa 가 flush 하고 database 커밋 까지 쭉 해버림
+    @Transactional
+    public void update(Long id, String name) {
+        // update하고 member를 return 안하는 이유는 커맨드와 쿼리를 분리하기 위해
+        Member member = memberRepository.findOne(id);
+        member.setName(name);
+    }
 }
