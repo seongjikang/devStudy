@@ -30,9 +30,12 @@ public class Order {
 	//ManyToOne 은 기본 패치 전략이 ... EAGER임 .. LAZY 꼭 명시 해줘야함 ..! OneToOne도 해주자..!
 	// n+1 -> 멤버를 가져오기 위해 n +1 번만큼 쿼리가 날라가는 문제가 발생...
 	// 난리가 난다.
-	@ManyToOne(fetch = LAZY)
+	@ManyToOne(fetch = LAZY) // 지연로딩일때는 .. DB에서 member를 바로 가져오진 않음 ..
 	@JoinColumn(name = "member_id")
 	private Member member;
+	// 실제로 ... 하이버네이트에서는 프록시 멤버(ByteBuddyInterceptor)를 만들어서 나중에 실제값 db에서 가져오면 거기를 채워줌!
+	// 근데 이렇게하면 ... 그냥 객체를 가져오는게 아니라서 ..에러가 뜬다 .. ㅜ 그럼 어떻게 하느냐?
+	//하이퍼네이트 모듈을 설치해야함 (권장 사항 아니다...)
 
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
 	private List<OrderItem> orderItems = new ArrayList<>();

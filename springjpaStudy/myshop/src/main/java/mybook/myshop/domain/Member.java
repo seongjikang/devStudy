@@ -1,5 +1,6 @@
 package mybook.myshop.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -33,6 +34,7 @@ public class Member {
 
 	//Order 테이블에 있는 member 필드에 의해 나는 매핑 된거야 라는 의미가 된다.
 	// 읽기전용이 됨..
+	@JsonIgnore //양방향 때문에 한쪽은 @JsonIgnore
 	@OneToMany(mappedBy = "member")
 	private List<Order> orders = new ArrayList<>();
 	// 위의 방식처럼 리스트는 생성해주는게 베스트 프렉티스다 기억하자.

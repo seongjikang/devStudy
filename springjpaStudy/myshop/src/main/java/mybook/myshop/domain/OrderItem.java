@@ -1,5 +1,6 @@
 package mybook.myshop.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,7 @@ public class OrderItem {
 	@JoinColumn(name = "item_id")
 	private Item item;
 
+	@JsonIgnore // 양방향이 걸린 경우니깐 여기도 @JsonIgnore
 	@ManyToOne(fetch = LAZY)
 	@JoinColumn(name = "order_id")
 	private Order order;
