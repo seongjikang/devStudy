@@ -109,6 +109,7 @@ public class OrderRepository {
     //QueryDSL 로 쓰면됨
 
     //fetch join
+    // 이정도 ... Entity 조회하는 거 정도는 괜찮음 ...
     public List<Order> findAllWithMemberDelivery() {
         // 이것도 물론 단점 존재 ... entity를 쭉 가져와서 조회하니깐 문제 ..
         return em.createQuery(
@@ -117,4 +118,22 @@ public class OrderRepository {
                         " join fetch o.delivery d", Order.class
         ).getResultList();
     }
+
+    //Dto를 바로 리턴 ..!
+    //네트웍 용량을 최적화 한다지만 ... 그렇게 효과는 없음
+    // 이 경우는 api 스펙이 바뀌면 뜯어 고칠 우려도 있음 ..
+    //별도의 패키지 만드는 방법을 이용해보자
+//    public List<OrderSimpleQueryDto> findOrderDtos() {
+//        return em.createQuery(
+//                "select new mybook.myshop.repository.OrderSimpleQueryDto(o.id, m.name, o.orderDate, o.status, d.address)" +
+//                        " from Order o" +
+//                        " join o.member m" +
+//                        " join o.delivery d", OrderSimpleQueryDto.class
+//        ).getResultList();
+//    }
+
+    // v3 vs v4 ??
+    // 둘간의 tradeoff 가 있음 ..!
+    // 성능은 v4
+    // 재사용성은 v3
 }

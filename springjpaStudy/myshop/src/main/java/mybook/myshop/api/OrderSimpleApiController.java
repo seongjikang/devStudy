@@ -7,6 +7,8 @@ import mybook.myshop.domain.Order;
 import mybook.myshop.domain.OrderStatus;
 import mybook.myshop.repository.OrderRepository;
 import mybook.myshop.repository.OrderSearch;
+import mybook.myshop.repository.OrderSimpleQueryDto;
+import mybook.myshop.repository.order.simplequery.OrderSimpleQueryRepository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,6 +23,11 @@ import static java.util.stream.Collectors.toList;
 public class OrderSimpleApiController {
 	// 이번 커밋은 xtoOne 관계에 대한 내용을 다룰 꺼임
 	private final OrderRepository orderRepository;
+	private final OrderSimpleQueryRepository orderSimpleQueryRepository;
+
+	// query 선택 순서
+	// V2 -> V3 -> V4
+	// 최후의 방법은 JPA가 제공하는 네이티브 SQL OR 스프링 JDBC Template
 
 	@GetMapping("/api/v1/simple-orders")
 	public List<Order> ordersV1() {
@@ -69,6 +76,11 @@ public class OrderSimpleApiController {
 		return orderRepository.findAllWithMemberDelivery().stream()
 				.map(SimpleOrderDto::new)
 				.collect(toList());
+	}
+
+	@GetMapping("/api/v4/simple-orders")
+	public List<OrderSimpleQueryDto> ordersV4() {
+		return orderSimpleQueryRepository.findOrderDtos();
 	}
 
 	@Data
