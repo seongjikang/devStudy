@@ -63,6 +63,14 @@ public class OrderSimpleApiController {
 				.collect(toList());
 	}
 
+	@GetMapping("/api/v3/simple-orders")
+	public List<SimpleOrderDto> ordersV3() {
+		// 실무에서는 fetch 조인이 필수임
+		return orderRepository.findAllWithMemberDelivery().stream()
+				.map(SimpleOrderDto::new)
+				.collect(toList());
+	}
+
 	@Data
 	static class SimpleOrderDto {
 		private Long orderId;

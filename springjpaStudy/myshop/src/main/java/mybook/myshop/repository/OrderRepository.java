@@ -107,4 +107,14 @@ public class OrderRepository {
 
     //리얼 실무 코드는 QueryDSL .. !
     //QueryDSL 로 쓰면됨
+
+    //fetch join
+    public List<Order> findAllWithMemberDelivery() {
+        // 이것도 물론 단점 존재 ... entity를 쭉 가져와서 조회하니깐 문제 ..
+        return em.createQuery(
+                "select o from Order o" +
+                        " join fetch o.member m" +
+                        " join fetch o.delivery d", Order.class
+        ).getResultList();
+    }
 }
