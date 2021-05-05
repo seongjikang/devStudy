@@ -119,6 +119,25 @@ public class OrderRepository {
         ).getResultList();
     }
 
+    //distinct 없이 만약에 쿼리돌리면 ..
+    //데이터 뻥티기의 ... 우려가 있음 .. (레퍼런스 조차 똑같은 ... 엔티티가 나오게됨 ...)
+    // database와의 distinct 가 다른점은 ? db는 완전히 데이터가 일치해야 distinct가됨 ..\
+    // 근데 jpa에서 distinct는 좀 다름 .. 이게 있으면 order (root인거지 이게...)를 가지고 올때 order가 같은 id 값이면 중복을 제거해줌
+    // 물론 db 의 distinct도 날려줌
+    // 일대다 페치 조인에서는... 페이징을 해버리면 ... 메모리에서 다해버리는 위험함 ...
+    // db 상으로는 불가능한데 ... jpa가 메모리에서 해버리니깐 ... 경고로그를 남기면서 모든 데이터를 데이터베이스에서 읽어오고 페이징을 메모리에서 해버림 ... 대안을 찾아서 해야함..
+    public List<Order> findAllWithItem() {
+        return em.createQuery(
+                "select distinct o from Order o" +
+                        " join fetch o.member m" +
+                        " join fetch o.delivery d" +
+                        " join fetch o.orderItems oi" +
+                        " join fetch oi.item i", Order.class)
+                .setFirstResult(1)
+                .setMaxResults(100)
+                .getResultList();
+    }
+
     //Dto를 바로 리턴 ..!
     //네트웍 용량을 최적화 한다지만 ... 그렇게 효과는 없음
     // 이 경우는 api 스펙이 바뀌면 뜯어 고칠 우려도 있음 ..
