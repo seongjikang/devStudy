@@ -138,6 +138,17 @@ public class OrderRepository {
                 .getResultList();
     }
 
+    //toone 관계는 왠만하면 ...  fetch 를 잡자.
+    public List<Order> findAllWithMemberDelivery(int offset, int limit) {
+        return em.createQuery(
+                "select o from Order o" +
+                        " join fetch o.member m" +
+                        " join fetch o.delivery d", Order.class
+        ).setFirstResult(offset)
+                .setMaxResults(limit)
+                .getResultList();
+    }
+
     //Dto를 바로 리턴 ..!
     //네트웍 용량을 최적화 한다지만 ... 그렇게 효과는 없음
     // 이 경우는 api 스펙이 바뀌면 뜯어 고칠 우려도 있음 ..

@@ -9,6 +9,7 @@ import mybook.myshop.domain.OrderStatus;
 import mybook.myshop.repository.OrderRepository;
 import mybook.myshop.repository.OrderSearch;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
@@ -52,6 +53,23 @@ public class OrderApiController {
         return result;
     }
 
+    //ToOne 관계는 모두 fetch join할 것! (얘네는 데이터 뻥티기가 되지 않음)
+    // 컬렉션은 지연로딩으로 조회한다..
+    // 지연로딩 서능 최적화를 위해서 hibernate.default_batch_fetch_size 적용함...
+    // 1+ n + n 이 1 + 1 + 1 로 만들어버리는 최적화 기법..
+    @GetMapping("/api/v3.1/orders")
+    public List<OrderDto> ordersV3page(
+            @RequestParam(value = "offset", defaultValue = "0") int offset,
+            @RequestParam(value = "limit", defaultValue = "100") int limit
+    ) {
+        List<Order> orders = orderRepository.findAllWithMemberDelivery(offset, limit);
+
+        List<OrderDto> result = orders.stream()
+                .map(o -> new OrderDto(o))
+                .collect(Collectors.toList());
+
+        return result;
+    }
 
     @Getter
     static class OrderDto {

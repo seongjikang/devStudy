@@ -20,6 +20,7 @@ spring:
       hibernate:
 #        show_sql: true
         format_sql: true
+        default_batch_fetch_size: 100 # 이렇게 해놓으면 collection의 데이터를 in 쿼리로 가져와버림 (여기 적은 숫자만큼..!)
 
 server:
   port: 9080
