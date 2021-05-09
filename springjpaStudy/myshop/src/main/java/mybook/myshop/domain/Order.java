@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static javax.persistence.FetchType.*;
+import static javax.persistence.FetchType.LAZY;
 
 // 코드를 도메인 모델 패턴으로 짬
 // 핵심 로직은 Entity 에 있고, Service에는 단순 위임 하는 형태로 짬 (ORM 기술에서는 도메인 모델 패턴이 나음)
@@ -37,6 +37,9 @@ public class Order {
 	// 근데 이렇게하면 ... 그냥 객체를 가져오는게 아니라서 ..에러가 뜬다 .. ㅜ 그럼 어떻게 하느냐?
 	//하이퍼네이트 모듈을 설치해야함 (권장 사항 아니다...)
 
+	// 컬렉션인 경우에는 이렇게 적용하면됨 (로컬하게 ..) 글로벌하게 하려면 그냥 .. application.yml에 적용하자.
+	// 맥시멈은 1000개!
+	//@BatchSize(size = 1000)
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
 	private List<OrderItem> orderItems = new ArrayList<>();
 
