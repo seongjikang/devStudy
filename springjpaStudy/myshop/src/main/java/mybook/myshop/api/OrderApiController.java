@@ -8,6 +8,8 @@ import mybook.myshop.domain.OrderItem;
 import mybook.myshop.domain.OrderStatus;
 import mybook.myshop.repository.OrderRepository;
 import mybook.myshop.repository.OrderSearch;
+import mybook.myshop.repository.order.query.OrderQueryDto;
+import mybook.myshop.repository.order.query.OrderQueryRepository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class OrderApiController {
     private final OrderRepository orderRepository;
+    private final OrderQueryRepository orderQueryRepository;
 
     @GetMapping("/api/v1/orders")
     public List<Order> ordersV1() {
@@ -70,6 +73,12 @@ public class OrderApiController {
 
         return result;
     }
+
+    @GetMapping("/api/v4/orders")
+    public List<OrderQueryDto> ordersV4() {
+        return orderQueryRepository.findOrderQueryDtos();
+    }
+
 
     @Getter
     static class OrderDto {
