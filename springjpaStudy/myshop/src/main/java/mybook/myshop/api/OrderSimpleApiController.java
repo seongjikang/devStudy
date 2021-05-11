@@ -8,6 +8,7 @@ import mybook.myshop.domain.OrderStatus;
 import mybook.myshop.repository.OrderRepository;
 import mybook.myshop.repository.OrderSearch;
 import mybook.myshop.repository.OrderSimpleQueryDto;
+import mybook.myshop.repository.order.query.OrderQueryDto;
 import mybook.myshop.repository.order.simplequery.OrderSimpleQueryRepository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
