@@ -1,6 +1,8 @@
 package mybook.myshop.repository.order.query;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import mybook.myshop.domain.Address;
 import mybook.myshop.domain.OrderStatus;
 
@@ -8,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
+@EqualsAndHashCode(of = "orderId")
 public class OrderQueryDto {
     private Long orderId;
     private String name;
@@ -17,6 +20,14 @@ public class OrderQueryDto {
     private List<OrderItemQueryDto> orderItems;
 
     public OrderQueryDto(Long orderId, String name, LocalDateTime orderDate, OrderStatus orderStatus, Address address) {
+        this.orderId = orderId;
+        this.name = name;
+        this.orderDate = orderDate;
+        this.orderStatus = orderStatus;
+        this.address = address;
+    }
+
+    public OrderQueryDto(Long orderId, String name, LocalDateTime orderDate, OrderStatus orderStatus, Address address, List<OrderItemQueryDto> orderItems) {
         this.orderId = orderId;
         this.name = name;
         this.orderDate = orderDate;
