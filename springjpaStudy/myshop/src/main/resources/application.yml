@@ -21,6 +21,10 @@ spring:
 #        show_sql: true
         format_sql: true
         default_batch_fetch_size: 100 # 이렇게 해놓으면 collection의 데이터를 in 쿼리로 가져와버림 (여기 적은 숫자만큼..!)
+#        open-in-view : false
+# 이거 사용할때는 쿼리전용 service를 만들어 사용할 수 있다.. (OrderService , OrderQueryService)
+# 이거 아니면 command 와 query를 분리하여 사용하는 방법이 있다.
+# 실시간 api -> osiv 끄고, admin 같이 커넥션 많이 사용하지 않는 곳은 켬
 
 server:
   port: 9080

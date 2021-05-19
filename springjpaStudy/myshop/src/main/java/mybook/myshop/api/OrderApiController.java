@@ -12,6 +12,7 @@ import mybook.myshop.repository.order.query.OrderFlatDto;
 import mybook.myshop.repository.order.query.OrderItemQueryDto;
 import mybook.myshop.repository.order.query.OrderQueryDto;
 import mybook.myshop.repository.order.query.OrderQueryRepository;
+import mybook.myshop.service.query.OrderQueryService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -49,15 +50,22 @@ public class OrderApiController {
         return result;
     }
 
-    @GetMapping("/api/v3/orders")
-    public List<OrderDto> ordersV3() {
-        List<Order> orders = orderRepository.findAllWithItem();
-        List<OrderDto> result = orders.stream()
-                .map(o -> new OrderDto(o))
-                .collect(toList());
+    private final OrderQueryService orderQueryService;
 
-        return result;
+    @GetMapping("/api/v3/orders")
+    public List<mybook.myshop.service.query.OrderDto> ordersV3() {
+        return orderQueryService.ordersV3();
     }
+
+
+//    public List<OrderDto> ordersV3() {
+//        List<Order> orders = orderRepository.findAllWithItem();
+//        List<OrderDto> result = orders.stream()
+//                .map(o -> new OrderDto(o))
+//                .collect(toList());
+//
+//        return result;
+//    }
 
     //ToOne 관계는 모두 fetch join할 것! (얘네는 데이터 뻥티기가 되지 않음)
     // 컬렉션은 지연로딩으로 조회한다..
