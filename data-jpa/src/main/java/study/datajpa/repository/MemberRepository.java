@@ -24,4 +24,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 	// NamedQuery는 로딩할때 에러를 내서 에러를 알려줌. (파싱을 미리 해줌 ...!)
 	List<Member> findByUserName(@Param("userName") String userName);
 
+	@Query("select m from Member m where m.userName = :userName and m.age = :age")
+	List<Member> findUser(@Param("userName") String userName, @Param("age") int age);
 }
