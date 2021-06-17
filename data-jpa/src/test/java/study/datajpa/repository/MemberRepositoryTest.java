@@ -149,4 +149,37 @@ public class MemberRepositoryTest {
         }
 
     }
+
+    @Test
+    public void returnType() {
+        Member m1 = new Member("KKK", 15);
+        Member m2 = new Member("JJJ", 20);
+        Member m3 = new Member("JJJ", 30);
+        memberRepository.save(m1);
+        memberRepository.save(m2);
+        memberRepository.save(m3);
+
+        Member findMember = memberRepository.findMemberByUserName("KKK");
+        assertThat(findMember.getUserName()).isEqualTo("KKK");
+        Optional<Member> findOptionalMember = memberRepository.findOptionalByUserName("JJJ");
+        assertThat(findOptionalMember.get().getUserName()).isEqualTo("JJJ");
+
+        // 만약에 값이 아예 없다면? 빈컬렉션을 제공해줌
+        //여기서 이제 .... 만약에 null 인지 체크하는 로직이 들어간다? 그건 쓰레기 로
+        List<Member> result = memberRepository.findListByUserName("AAA");
+        assertThat(result.size()).isEqualTo(0);
+
+        // 단건 조회는 null 이 나와야 정상
+        Member nullMember = memberRepository.findMemberByUserName("BBB");
+        assertThat(nullMember).isEqualTo(null);
+
+        Optional<Member> optionalEmptyMember = memberRepository.findOptionalByUserName("CCC");
+        System.out.println(optionalEmptyMember.orElse(new Member("Empty")));
+
+        // 어떤 DB든 같은 Exception 을 냄
+        // IncorrectResultSizeDataAccessException
+//        Optional<Member> exceptionMember = memberRepository.findOptionalByUserName("JJJ");
+//        System.out.println(exceptionMember);
+
+    }
 }
