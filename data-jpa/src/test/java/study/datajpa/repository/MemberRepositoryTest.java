@@ -3,6 +3,10 @@ package study.datajpa.repository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.dto.MemberDto;
@@ -181,5 +185,75 @@ public class MemberRepositoryTest {
 //        Optional<Member> exceptionMember = memberRepository.findOptionalByUserName("JJJ");
 //        System.out.println(exceptionMember);
 
+    }
+
+    @Test
+    public void paging() {
+        //given
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 10));
+        memberRepository.save(new Member("member3", 10));
+        memberRepository.save(new Member("member4", 10));
+        memberRepository.save(new Member("member5", 10));
+
+        int age = 10;
+
+        PageRequest pageRequest = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "userName"));
+
+        //when
+        Page<Member> page = memberRepository.findPageByAge(age, pageRequest); // 이런소스는 절대 컨트롤러에서 리턴하면안됨...
+        //dto 로 리턴
+        Page<MemberDto> toMap = page.map(member -> new MemberDto(member.getId(), member.getUserName(), null));
+
+        //then
+        List<Member> content = page.getContent();
+        long totalElements = page.getTotalElements();
+
+        List<MemberDto> dtoContent = toMap.getContent();
+
+        for (Member member : content) {
+            System.out.println("member = " + member);
+        }
+
+        for (MemberDto mDto : dtoContent) {
+            System.out.println("mDto = " +mDto);
+        }
+
+        System.out.println("totalElements = " + totalElements);
+
+        assertThat(content.size()).isEqualTo(3);
+        assertThat(page.getTotalElements()).isEqualTo(5);
+        assertThat(page.getNumber()).isEqualTo(0);
+        assertThat(page.getTotalPages()).isEqualTo(2);
+        assertThat(page.isFirst()).isTrue();
+        assertThat(page.hasNext()).isTrue();
+
+    }
+
+    @Test
+    public void slice() {
+        //given
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 10));
+        memberRepository.save(new Member("member3", 10));
+        memberRepository.save(new Member("member4", 10));
+        memberRepository.save(new Member("member5", 10));
+
+        int age = 10;
+        PageRequest pageRequest = PageRequest.of(1, 3, Sort.by(Sort.Direction.DESC, "userName"));
+
+        //when
+        Slice<Member> page = memberRepository.findSliceByAge(age, pageRequest);
+
+        List<Member> content = page.getContent();
+
+        for (Member member : content) {
+            System.out.println("member = " + member);
+        }
+
+        assertThat(content.size()).isEqualTo(2);
+        assertThat(page.getNumber()).isEqualTo(1);
+        assertThat(page.isFirst()).isFalse();
+        assertThat(page.hasNext()).isFalse();
     }
 }
