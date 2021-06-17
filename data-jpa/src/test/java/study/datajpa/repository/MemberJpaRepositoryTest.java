@@ -82,4 +82,32 @@ class MemberJpaRepositoryTest {
         Member findMember = result.get(0);
         assertThat(findMember).isEqualTo(m1);
     }
+
+    @Test
+    public void paging() {
+        Member m1 = new Member("m1", 10);
+        Member m2 = new Member("m2", 10);
+        Member m3 = new Member("m3", 10);
+        Member m4 = new Member("m4", 10);
+        Member m5 = new Member("m5", 10);
+        memberJpaRepository.save(m1);
+        memberJpaRepository.save(m2);
+        memberJpaRepository.save(m3);
+        memberJpaRepository.save(m4);
+        memberJpaRepository.save(m5);
+
+        int age = 10;
+        int offset = 0;
+        int limit = 3;
+        List<Member> members = memberJpaRepository.findByPage(age, offset, limit);
+        long totalCount = memberJpaRepository.totalCount(age);
+
+        //여기서 단순하게 실제로 페이징 소스 구현하려면 아래의 복잡한 과정을 거쳐야함...
+        // totalPage = totalCOunt / size ...
+        // 마지막 페이지 일때 계산 로직 ...
+        // 최초 페이지 일때 계산 로직 ...
+
+        assertThat(members.size()).isEqualTo(3);
+
+    }
 }

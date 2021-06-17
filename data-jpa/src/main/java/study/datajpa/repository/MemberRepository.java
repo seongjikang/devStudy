@@ -1,5 +1,8 @@
 package study.datajpa.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -43,5 +46,14 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 	List<Member> findListByUserName(String userName); // 컬렉션
 	Member findMemberByUserName(String userName); // 단건
 	Optional<Member> findOptionalByUserName(String userName); // 단건 optional
+
+	// 카운트 할때는 조인을 할 필요가 없다 ..! 그래서 이런 로직을 넣어줘야함.
+	@Query(value = "select m from Member m left join m.team t",
+			countQuery = "select count(m.userName) from Member m")
+	Page<Member> findPageByAge(int age, Pageable pageable);
+
+	Slice<Member> findSliceByAge(int age, Pageable pageable);
+
+	List<Member> findByAge(int age, Pageable pageable);
 
 }
