@@ -13,6 +13,9 @@ import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
 import study.datajpa.entity.Team;
 
+import javax.persistence.Entity;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +29,8 @@ import static org.junit.jupiter.api.Assertions.*;
 public class MemberRepositoryTest {
     @Autowired MemberRepository memberRepository;
     @Autowired TeamRepository teamRepository;
+    //@PersistenceContext
+    //EntityManager em;
 
     @Test
     public void testMember() {
@@ -255,5 +260,29 @@ public class MemberRepositoryTest {
         assertThat(page.getNumber()).isEqualTo(1);
         assertThat(page.isFirst()).isFalse();
         assertThat(page.hasNext()).isFalse();
+    }
+
+    @Test
+    public void bulkUpdate() {
+        Member m1 = new Member("m1", 18);
+        Member m2 = new Member("m2", 19);
+        Member m3 = new Member("m3", 20);
+        Member m4 = new Member("m4", 21);
+        Member m5 = new Member("m5", 22);
+        memberRepository.save(m1);
+        memberRepository.save(m2);
+        memberRepository.save(m3);
+        memberRepository.save(m4);
+        memberRepository.save(m5);
+
+        int resultCount = memberRepository.bulkAgePlus(20);
+        //em.flush(); 이건 안해줘도 되는 이유? 음 ... jpql 은 호출되기전에 먼저 flush를 해줌
+        //em.clear(); // bulk 연산 수정 후에는 이 과정들을 거쳐줘야 ... db의 데이터가 나옴.. 다음 로직이 있을때는 무조건 .... ! 해주자 ... 없으면 상관없음 , spring data jpa에서는 그냥 repository 의 @Modify의 옵션을 이용하자.
+
+        List<Member> result = memberRepository.findByUserName("m5");
+        Member member5 = result.get(0);
+        System.out.println("member5 = " + member5);
+
+        assertThat(resultCount).isEqualTo(3);
     }
 }
