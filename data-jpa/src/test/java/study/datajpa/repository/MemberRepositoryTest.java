@@ -29,8 +29,8 @@ import static org.junit.jupiter.api.Assertions.*;
 public class MemberRepositoryTest {
     @Autowired MemberRepository memberRepository;
     @Autowired TeamRepository teamRepository;
-    //@PersistenceContext
-    //EntityManager em;
+    @PersistenceContext
+    EntityManager em;
 
     @Test
     public void testMember() {
@@ -284,5 +284,41 @@ public class MemberRepositoryTest {
         System.out.println("member5 = " + member5);
 
         assertThat(resultCount).isEqualTo(3);
+    }
+
+    @Test
+    public void findMemberLazy() {
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+
+        Member member1 = new Member("member1", 10, teamA);
+        Member member2 = new Member("member2", 10, teamB);
+
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        em.flush();
+        em.clear();
+
+        //List<Member> members = memberRepository.findAll();
+        // 팀 이름에 대한 걸 디비에서 가져옴 ... 원래 가짜 객체만 가져오기 때문에..
+        // N+1 문제가 발생하는경우 ... 흠 ... 어떻게 해결하냠
+        // JPA에서는 패치조인으로 해결하지..!
+        // 이렇게 아래처럼 말야 ..!
+        // 이렇게하면 가짜 객체가 아닌 진짜 객체를 가져온다.
+       // List<Member> members = memberRepository.findMemberFetchJoin();
+
+        //더 쉬운 방법 엔티티 그래프 활용하기
+        //List<Member> members = memberRepository.findAll();
+        List<Member> members = memberRepository.findEntityGraphByUserName("member1");
+
+        for(Member member : members) {
+            System.out.println("member = " + member.getUserName());
+            System.out.println("member.teamClass = " + member.getTeam().getClass());
+            System.out.println("member.team = " + member.getTeam().getName());
+        }
     }
 }

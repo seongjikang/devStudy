@@ -3,6 +3,7 @@ package study.datajpa.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -61,4 +62,22 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 	@Query("update Member m set m.age = m.age + 1 where m.age >= :age")
 	int bulkAgePlus(@Param("age") int age);
 
+	// n+1 문제가 있음 ...
+	@Query("select m from Member m left join fetch m.team")
+	List<Member> findMemberFetchJoin();
+
+	//위에것을 깔끔하게 하는 방법
+	@Override
+	@EntityGraph(attributePaths = {"team"})
+	List<Member> findAll();
+
+	// 쿼리를 짰는데 ... 엔티티그래프 쓸때도 가능
+	@EntityGraph(attributePaths = {"team"})
+	@Query("select m from Member m")
+	List<Member> findMemberEntityGraph();
+
+	// 그리고 named query에서도 entity graph 사용 가능
+	//@EntityGraph(attributePaths = {"team"})
+	@EntityGraph("Member.all")
+	List<Member> findEntityGraphByUserName(@Param("userName") String userName);
 }
