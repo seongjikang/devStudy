@@ -13,7 +13,9 @@ import javax.persistence.QueryHint;
 import java.util.List;
 import java.util.Optional;
 
-public interface MemberRepository extends JpaRepository<Member, Long> {
+// 화면에 맞춘 복잡한 쿼리는 별도로 만들어서 진행하는게 낫다.
+// 핵심 비지니스와 화면에 맞춘 클래스는 쪼개버리자
+public interface MemberRepository extends JpaRepository<Member, Long>, CustomMemberRepository {
 	List<Member> findByUserNameAndAgeGreaterThan(String userName, int age);
 	// 짤막짤막한 쿼리는 메서드 이름을 가지고 쿼리를 안짜고 이렇게 호출이 가능함
 	//조회 : find...By, read...By, query...By, get...By
