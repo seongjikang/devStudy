@@ -3,14 +3,13 @@ package study.datajpa.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.jpa.repository.EntityGraph;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
 
+import javax.persistence.LockModeType;
+import javax.persistence.QueryHint;
 import java.util.List;
 import java.util.Optional;
 
@@ -80,4 +79,13 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 	//@EntityGraph(attributePaths = {"team"})
 	@EntityGraph("Member.all")
 	List<Member> findEntityGraphByUserName(@Param("userName") String userName);
+
+	@QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
+	Member findReadOnlyByUserName(String userName);
+
+	// 실시간 서비스는 왠만하면 걸지 말것 !
+	// 거실려면 Optimistic 락이라고 버저닝이라는 메커니즘으로 해결하는 방법을 하자...
+	// 금융권에서는 lock은 필수임으로 ... 잘 고려해서 사용해야함 ..
+	@Lock(LockModeType.PESSIMISTIC_WRITE)
+	List<Member> findLockByUserName(String userName);
 }

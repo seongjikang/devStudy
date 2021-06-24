@@ -321,4 +321,33 @@ public class MemberRepositoryTest {
             System.out.println("member.team = " + member.getTeam().getName());
         }
     }
+
+    @Test
+    public void queryHint() {
+        //given
+        Member member1 = memberRepository.save(new Member("member1", 10));// 영속석 컨텍스트
+        em.flush(); // db에 들어감
+        em.clear(); // 영속석 컨텍스트에 남아있는 것도 날려버림
+
+        //when
+        //Member findMember = memberRepository.findById(member1.getId()).get();
+        //findMember.setUserName("member2"); //변경감지--> 결국 객체를 2개 관리하기에 메모리나 그런 자원을 많이 사용하게 되는 건 분명 ..!
+
+        // 단순 조회만 하는 건 readOnly를 위해 hint를 쓰자
+        // 성능 최적화를 할때 진짜 중요한 것만 넣는게 맞을듯 ... 막다 넣는건 아님!
+        Member findMember = memberRepository.findReadOnlyByUserName("member1");
+        findMember.setUserName("member2"); // 얘는 변경이 안될 것임 !! 리드온니니깐 무시 해버림
+        
+        em.flush();
+    }
+
+    @Test
+    public void lock() {
+        Member member1 = new Member("member1", 10);
+        memberRepository.save(member1);
+        em.flush();
+        em.clear();
+
+        List<Member> result = memberRepository.findLockByUserName("member1");
+    }
 }
