@@ -15,7 +15,7 @@ import static javax.persistence.FetchType.*;
         query = "select m from Member m where m.userName = :userName"
 )
 @NamedEntityGraph(name = "Member.all", attributeNodes = @NamedAttributeNode("team")) // jpa 표준 스펙임
-public class Member {
+public class Member extends BaseEntity {
     @Id @GeneratedValue
     @Column(name="member_id")
     private Long id;
