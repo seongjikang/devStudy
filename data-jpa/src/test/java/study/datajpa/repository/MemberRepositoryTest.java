@@ -355,4 +355,40 @@ public class MemberRepositoryTest {
     public void callCustomRepo() {
         List<Member> result = memberRepository.customFindMember();
     }
+
+    @Test
+    public void projections() {
+        //given
+        Team teamA = new Team("teamA");
+        em.persist(teamA);
+
+        Member m1 = new Member("m1", 0, teamA);
+        Member m2 = new Member("m2", 0, teamA);
+
+        em.persist(m1);
+        em.persist(m2);
+
+        em.flush();
+        em.clear();
+
+        //when
+        //List<UserNameOnly> result = memberRepository.findProjectionsByUserName("m1");
+        //List<UserNameOnlyDto> result = memberRepository.findProjectionsByUserName("m1");
+        //List<UserNameOnlyDto> result = memberRepository.findProjectionsByUserName("m1", UserNameOnlyDto.class);
+        List<NestedClosedProjections> result = memberRepository.findProjectionsByUserName("m1", NestedClosedProjections.class);
+
+//        for (UserNameOnly userNameOnly : result) {
+//            System.out.println("userNameOnly: " + userNameOnly.getUserName() );
+//        }
+
+//        for (UserNameOnlyDto userNameOnlyDto : result) {
+//            System.out.println("userNameOnlyDto: " + userNameOnlyDto.getUserName() );
+//        }
+        for (NestedClosedProjections nestedClosedProjections : result) {
+            System.out.println("nestedClosedProjections.getName: " + nestedClosedProjections.getUserName());
+            System.out.println("nestedClosedProjections.getTeamName: " + nestedClosedProjections.getTeam().getName()); // 여기서부터 최적화가 안됨 .. (team 을 다가져와 버림 ..)
+        }
+    }
+
+
 }
