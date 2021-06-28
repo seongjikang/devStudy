@@ -90,4 +90,9 @@ public interface MemberRepository extends JpaRepository<Member, Long>, CustomMem
 	// 금융권에서는 lock은 필수임으로 ... 잘 고려해서 사용해야함 ..
 	@Lock(LockModeType.PESSIMISTIC_WRITE)
 	List<Member> findLockByUserName(String userName);
+
+	//List<UserNameOnly> findProjectionsByUserName(@Param("userName") String userName);
+	List<UserNameOnlyDto> findProjectionsByUserName(@Param("userName") String userName);
+
+	<T> List<T> findProjectionsByUserName(@Param("userName") String userName, Class<T> type);
 }
