@@ -14,6 +14,7 @@ import study.querydsl.entity.Team;
 import javax.persistence.EntityManager;
 
 import static org.assertj.core.api.Assertions.*;
+import static study.querydsl.entity.QMember.*;
 
 @SpringBootTest
 @Transactional
@@ -22,10 +23,13 @@ public class QuerydslBasicTest {
 	@Autowired
 	EntityManager em;
 
-	JPAQueryFactory queryFactory;1
+	JPAQueryFactory queryFactory;
 
 	@BeforeEach
 	public void before() {
+
+		queryFactory = new JPAQueryFactory(em);
+
 		Team teamA = new Team("a");
 		Team teamB = new Team("b");
 
@@ -56,18 +60,37 @@ public class QuerydslBasicTest {
 
 	@Test
 	public void testQuerydsl() {
-		queryFactory = new JPAQueryFactory(em);
-		QMember m = new QMember("m");
 
+		//QMember m = new QMember("m"); // 같은 테이블을 조인해서 쓸때만 권장.
+		//QMember m = QMember.member;
+
+		// member 를 static으로 올리면 깔끔 ..!
 		Member findMember = queryFactory
-				.select(m)
-				.from(m)
-				.where(m.userName.eq("kang"))
+				.select(member)
+				.from(member)
+				.where(member.userName.eq("kang"))
 				.fetchOne();
 
 		assertThat(findMember.getUserName()).isEqualTo("kang");
 
 	}
 
+	@Test
+	public void search() {
+		Member findMember = queryFactory
+				.selectFrom(member)
+//				.where(member.userName.eq("kang")
+//						//.and(member.age.eq(10)))
+//						.and(member.age.between(10,30)))
+//				.fetchOne();
+				//and 랑 같은 방법 ( 동적쿼리를 위해서 이렇게 하는게 조음
+				.where(
+						member.userName.eq("kang"),
+						member.age.eq(10)
+				)
+				.fetchOne();
+
+		assertThat(findMember.getUserName()).isEqualTo("kang");
+	}
 
 }
