@@ -44,17 +44,13 @@ public class QuerydslBasicTest {
 		Member member2 = new Member("member2", 20, teamA);
 		Member member3 = new Member("member3", 30, teamB);
 		Member member4 = new Member("member4", 40, teamB);
-		Member memberNull = new Member(null, 50);
-		Member member5 = new Member("member5", 50);
-		Member member6 = new Member("member6", 50);
+
 
 		em.persist(member1);
 		em.persist(member2);
 		em.persist(member3);
 		em.persist(member4);
-		em.persist(memberNull);
-		em.persist(member5);
-		em.persist(member6);
+
 	}
 
 	@Test
@@ -134,6 +130,10 @@ public class QuerydslBasicTest {
 
 	@Test
 	public void sort() {
+		em.persist(new Member(null, 50));
+		em.persist( new Member("member5", 50));
+		em.persist(new Member("member6", 50));
+
 		List<Member> descAge = queryFactory
 				.selectFrom(member)
 				.where(member.age.eq(50))
@@ -158,6 +158,44 @@ public class QuerydslBasicTest {
 		assertThat(member5.getUserName()).isEqualTo("member5");
 		assertThat(member6.getUserName()).isEqualTo("member6");
 		assertThat(memberNull.getUserName()).isEqualTo(null);
+
+	}
+
+	@Test
+	public void paging1() {
+		List<Member> result = queryFactory
+				.selectFrom(member)
+				.orderBy(member.userName.desc())
+				.offset(1)
+				.limit(2)
+				.fetch();
+
+		assertThat(result.size()).isEqualTo(2);
+	}
+
+	@Test
+	public void paging2() {
+		QueryResults<Member> result = queryFactory
+				.selectFrom(member)
+				.orderBy(member.userName.desc())
+				.offset(1)
+				.limit(2)
+				.fetchResults();
+
+		long total = result.getTotal(); //전체 컨텐츠 갯수
+		long limit = result.getLimit(); // 현재 제한한 갯수
+		long offset = result.getOffset(); // 조회 시작 위치
+		List<Member> results = result.getResults(); // 조회된 컨텐츠 리스트
+
+		for(Member member : results) {
+			System.out.println(member.getUserName());
+		}
+
+
+		assertThat(result.getTotal()).isEqualTo(4);
+		assertThat(result.getLimit()).isEqualTo(2);
+		assertThat(result.getOffset()).isEqualTo(1);
+		assertThat(result.getResults().size()).isEqualTo(2);
 
 	}
 
