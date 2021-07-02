@@ -1,6 +1,7 @@
 package study.querydsl;
 
 import com.querydsl.core.QueryResults;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,10 +44,17 @@ public class QuerydslBasicTest {
 		Member member2 = new Member("member2", 20, teamA);
 		Member member3 = new Member("member3", 30, teamB);
 		Member member4 = new Member("member4", 40, teamB);
+		Member memberNull = new Member(null, 50);
+		Member member5 = new Member("member5", 50);
+		Member member6 = new Member("member6", 50);
+
 		em.persist(member1);
 		em.persist(member2);
 		em.persist(member3);
 		em.persist(member4);
+		em.persist(memberNull);
+		em.persist(member5);
+		em.persist(member6);
 	}
 
 	@Test
@@ -121,6 +129,35 @@ public class QuerydslBasicTest {
 		long count = queryFactory
 				.selectFrom(member)
 				.fetchCount();
+
+	}
+
+	@Test
+	public void sort() {
+		List<Member> descAge = queryFactory
+				.selectFrom(member)
+				.where(member.age.eq(50))
+				.orderBy(member.age.desc())
+				.fetch();
+
+		List<Member> ascUserName = queryFactory
+				.selectFrom(member)
+				.where(member.age.eq(50))
+				.orderBy(member.userName.asc())
+				.fetch();
+
+		List<Member> result = queryFactory
+				.selectFrom(member)
+				.where(member.age.eq(50))
+				.orderBy(member.age.desc(), member.userName.asc().nullsLast())
+				.fetch();
+
+		Member member5 = result.get(0);
+		Member member6 = result.get(1);
+		Member memberNull = result.get(2);
+		assertThat(member5.getUserName()).isEqualTo("member5");
+		assertThat(member6.getUserName()).isEqualTo("member6");
+		assertThat(memberNull.getUserName()).isEqualTo(null);
 
 	}
 
