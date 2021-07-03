@@ -1,6 +1,7 @@
 package study.querydsl;
 
 import com.querydsl.core.QueryResults;
+import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.assertj.core.api.Assertions;
@@ -11,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import study.querydsl.entity.Member;
 import study.querydsl.entity.QMember;
+import study.querydsl.entity.QTeam;
 import study.querydsl.entity.Team;
 
 import javax.persistence.EntityManager;
@@ -19,6 +21,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 import static study.querydsl.entity.QMember.*;
+import static study.querydsl.entity.QTeam.team;
 
 @SpringBootTest
 @Transactional
@@ -197,6 +200,71 @@ public class QuerydslBasicTest {
 		assertThat(result.getOffset()).isEqualTo(1);
 		assertThat(result.getResults().size()).isEqualTo(2);
 
+	}
+
+	@Test
+	public void aggregation() {
+		List<Tuple> result = queryFactory
+				.select(
+						member.count(),
+						member.age.sum(),
+						member.age.avg(),
+						member.age.min(),
+						member.age.max()
+				)
+				.from(member)
+				.fetch();
+
+		//데이터 타입이 여러개가 들어올때 튜플을 활용하면됨
+		Tuple tuple = result.get(0);
+
+		assertThat(tuple.get(member.count())).isEqualTo(4);
+		assertThat(tuple.get(member.age.sum())).isEqualTo(100);
+		assertThat(tuple.get(member.age.avg())).isEqualTo(25);
+		assertThat(tuple.get(member.age.min())).isEqualTo(10);
+		assertThat(tuple.get(member.age.max())).isEqualTo(40);
+	}
+
+	@Test
+	public void group() {
+		List<Tuple> result = queryFactory
+				.select(
+						team.name,
+						member.count(),
+						member.age.avg(),
+						member.age.sum(),
+						member.age.min(),
+						member.age.max()
+				)
+				.from(member)
+				.join(member.team, team)
+				.groupBy(team.name)
+				.having(team.name.eq("a"))
+				.fetch();
+
+		Tuple teamA = result.get(0);
+		//Tuple teamB = result.get(1);
+
+		String teamAName = teamA.get(team.name);
+		Long teamACount = teamA.get(member.count());
+		Double teamAAvgAge = teamA.get(member.age.avg());
+		Integer teamASum = teamA.get(member.age.sum());
+		Integer teamAMin = teamA.get(member.age.min());
+		Integer teamAMax = teamA.get(member.age.max());
+
+
+//		String teamBName = teamB.get(team.name);
+//		Long teamBCount = teamB.get(member.count());
+//		Double teamBAvgAge = teamB.get(member.age.avg());
+//		Integer teamBSum = teamB.get(member.age.sum());
+//		Integer teamBMin = teamB.get(member.age.min());
+//		Integer teamBMax = teamB.get(member.age.max());
+
+		assertThat(teamAName).isEqualTo("a");
+		assertThat(teamAAvgAge).isEqualTo(15);
+
+//		assertThat(teamBName).isEqualTo("b");
+//		assertThat(teamBAvgAge).isEqualTo(35);
 	}
 
 }
