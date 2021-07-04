@@ -44,7 +44,7 @@ public class QuerydslBasicTest {
 		em.persist(teamB);
 
 		Member member1 = new Member("kang", 10, teamA);
-		Member member2 = new Member("member2", 20, teamA);
+		Member member2 = new Member("kim", 20, teamA);
 		Member member3 = new Member("member3", 30, teamB);
 		Member member4 = new Member("member4", 40, teamB);
 
@@ -267,4 +267,36 @@ public class QuerydslBasicTest {
 //		assertThat(teamBAvgAge).isEqualTo(35);
 	}
 
+	@Test
+	public void join() {
+		List<Member> result = queryFactory
+				.selectFrom(member)
+				.join(member.team, team) // innerJoin 과 같음
+				//.rightJoin(member.team, team) // right outer join
+				//.leftJoin(member.team, team) // left outer join
+				.where(team.name.eq("a"))
+				.fetch();
+
+		assertThat(result)
+				.extracting("userName")
+				.containsExactly("kang", "kim");
+
+	}
+
+	@Test
+	public void thetaJoin() {
+		em.persist(new Member("a"));
+		em.persist(new Member("b"));
+		em.persist(new Member("c"));
+
+		List<Member> result = queryFactory
+				.select(member)
+				.from(member, team)
+				.where(member.userName.eq(team.name))
+				.fetch();
+
+		assertThat(result)
+				.extracting("userName")
+				.containsExactly("a", "b");
+	}
 }
