@@ -275,6 +275,7 @@ public class QuerydslBasicTest {
 				//.rightJoin(member.team, team) // right outer join
 				//.leftJoin(member.team, team) // left outer join
 				.where(team.name.eq("a"))
+				//.on(team.name.eq("a")) // 이것과 where 절은 결과가 같음.. inner join이라서
 				.fetch();
 
 		assertThat(result)
@@ -285,6 +286,8 @@ public class QuerydslBasicTest {
 
 	@Test
 	public void thetaJoin() {
+		// 회원의 이름과 팀의 이름이 같은 조인
+
 		em.persist(new Member("a"));
 		em.persist(new Member("b"));
 		em.persist(new Member("c"));
@@ -298,5 +301,42 @@ public class QuerydslBasicTest {
 		assertThat(result)
 				.extracting("userName")
 				.containsExactly("a", "b");
+	}
+
+	@Test
+	public void joinOnFiltering() {
+		// 회원과 팀을 조인하면서 팀이름이 a 인 팀만 조회하고 회원은 모두 조회함
+		// select m, t from Member m left join m.team t on t.name = 'a';
+
+		List<Tuple> result = queryFactory
+				.select(member, team)
+				.from(member)
+				.leftJoin(member.team, team).on(team.name.eq("a"))
+				.fetch();
+
+		for (Tuple tuple : result) {
+			System.out.println("tuple = " + tuple);
+		}
+	}
+
+	@Test
+	public void joinOnNoRelation() {
+		// 회원의 이름과 팀의 이름이 같은 대상 외부 조인
+		// 연관 관계가 없는 엔티티를 외부 조인
+
+		em.persist(new Member("a"));
+		em.persist(new Member("b"));
+		em.persist(new Member("c"));
+
+		List<Tuple> result = queryFactory
+				.select(member, team)
+				.from(member)
+				//.leftJoin(member.team, team) // 기존에 leftJoin을 할때 member의 team을 꺼내서 함 , 이렇게하면 id 값으로 매칭
+				.leftJoin(team).on(member.userName.eq(team.name)) // 이름으로만 매칭
+				.fetch();
+
+		for (Tuple tuple : result) {
+			System.out.println("tuple = " + tuple);
+		}
 	}
 }
