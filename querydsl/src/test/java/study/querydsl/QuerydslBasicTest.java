@@ -2,6 +2,7 @@ package study.querydsl;
 
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.assertj.core.api.Assertions;
@@ -21,6 +22,7 @@ import javax.persistence.PersistenceUnit;
 
 import java.util.List;
 
+import static com.querydsl.jpa.JPAExpressions.*;
 import static org.assertj.core.api.Assertions.*;
 import static study.querydsl.entity.QMember.*;
 import static study.querydsl.entity.QTeam.team;
@@ -363,7 +365,77 @@ public class QuerydslBasicTest {
 
 		boolean loaded = emf.getPersistenceUnitUtil().isLoaded(findMember.getTeam());
 		assertThat(loaded).as("페치 조인 적용").isTrue();
+	}
 
+	@Test
+	public void subQuery() {
+		QMember subMember = new QMember("subMember");
 
+		List<Member> result = queryFactory
+				.selectFrom(member)
+				.where(member.age.eq(
+						//JPAExpressions.
+						select(subMember.age.min())
+								.from(subMember) // 이거에 대한 결과가 나올거임
+				))
+				.fetch();
+
+		assertThat(result).extracting("age")
+				.containsExactly(10);
+	}
+
+	@Test
+	public void subQuery2() {
+		QMember subMember = new QMember("subMember");
+
+		// goe, loe 등 사용하여 수치 비교하는 서브쿼리 가능
+		List<Member> result = queryFactory
+				.selectFrom(member)
+				.where(member.age.loe(
+						//JPAExpressions.
+						select(subMember.age.avg())
+								.from(subMember) // 이거에 대한 결과가 나올거임
+				))
+				.fetch();
+
+		assertThat(result).extracting("age")
+				.containsExactly(10, 20);
+	}
+
+	@Test
+	public void subQuery3() {
+		QMember subMember = new QMember("subMember");
+
+		//in query도 사용 가능함
+		List<Member> result = queryFactory
+				.selectFrom(member)
+				.where(member.age.in(
+						//JPAExpressions.
+						select(subMember.age)
+								.from(subMember)
+								.where(subMember.age.lt(40))// 이거에 대한 결과가 나올거임
+				))
+				.fetch();
+
+		assertThat(result).extracting("age")
+				.containsExactly(10, 20, 30);
+	}
+
+	@Test
+	public void selectSubQuery() {
+		QMember subMember = new QMember("subMember");
+
+		List<Tuple> result = queryFactory
+				.select(member.userName,
+						//JPAExpressions.
+						select(subMember.age.avg())
+								.from(subMember)
+				)
+				.from(member)
+				.fetch();
+
+		 for (Tuple tuple : result) {
+		 	System.out.println("tuple = " + tuple);
+		 }
 	}
 }
