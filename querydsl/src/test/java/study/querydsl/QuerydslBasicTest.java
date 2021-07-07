@@ -2,6 +2,8 @@ package study.querydsl;
 
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.ExpressionUtils;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
@@ -13,6 +15,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import study.querydsl.dto.MemberDto;
+import study.querydsl.dto.QMemberDto;
+import study.querydsl.dto.TeamMemberDto;
 import study.querydsl.entity.Member;
 import study.querydsl.entity.QMember;
 import study.querydsl.entity.QTeam;
@@ -484,6 +489,18 @@ public class QuerydslBasicTest {
 	}
 
 	@Test
+	public void distinct() {
+		List<String> result = queryFactory
+				.select(member.userName).distinct()
+				.from(member)
+				.fetch();
+
+		for (String s : result) {
+			System.out.println("name = " + s);
+		}
+	}
+
+	@Test
 	public void concat() {
 		String member = queryFactory
 				.select(QMember.member.userName.concat("&").concat(QMember.member.age.stringValue())) //ENUM 처리할때
@@ -492,5 +509,140 @@ public class QuerydslBasicTest {
 				.fetchOne();
 
 		System.out.println("member = " + member);
+	}
+
+	// 프로젝션 대상이 하나인 경우
+	@Test
+	public void simpleProjection() {
+		List<String> result = queryFactory
+				.select(member.userName)
+				.from(member)
+				.fetch();
+
+		for (String member : result) {
+			System.out.println("member = " + member);
+		}
+	}
+
+	// 프로젝션 대상이 두개 이상인 경우 (Tuple로 조회)
+	// tuple 죄회는 repository 안에서 정도만 쓰는게 좋다. (이것도 노출되면 좀 곤란한 데이터이니 ..)
+	@Test
+	public void tupleProjection() {
+		List<Tuple> result = queryFactory
+				.select(member.userName, member.age)
+				.from(member)
+				.fetch();
+
+		for (Tuple tuple : result) {
+			String userName = tuple.get(member.userName);
+			Integer age = tuple.get(member.age);
+			System.out.println(userName);
+			System.out.println(age);
+		}
+	}
+
+	@Test
+	public void findDtoByJPQL() {
+		List<MemberDto> result = em.createQuery(
+						"select " +
+								"new study.querydsl.dto.MemberDto(m.userName, m.age) "+
+								"from Member m", MemberDto.class)
+				.getResultList();
+
+		for(MemberDto memberDto : result) {
+			System.out.println("memberDto = " + memberDto);
+		}
+	}
+
+	@Test
+	public void findDtoBySetter() {
+		List<MemberDto> result = queryFactory
+				.select(Projections.bean(MemberDto.class,
+						member.userName, member.age)) // 이게 dto 랑 정확히 매칭 되어야 쓸수 있음
+				.from(member)
+				.fetch();
+
+		for(MemberDto memberDto : result) {
+			System.out.println("memberDto = " + memberDto);
+		}
+	}
+
+	@Test
+	public void findDtoByField() {
+		List<MemberDto> result = queryFactory
+				.select(Projections.fields(MemberDto.class,
+						member.userName, member.age)) // 이게 dto 랑 정확히 매칭 되어야 쓸수 있음
+				.from(member)
+				.fetch();
+
+
+		for(MemberDto memberDto : result) {
+			System.out.println("memberDto = " + memberDto);
+		}
+	}
+
+	@Test
+	public void findDtoByConstructor() {
+	// 생성자의 경우 type만 맞으면됨
+		List<TeamMemberDto> result = queryFactory
+//				.select(Projections.constructor(MemberDto.class,
+//						member.userName, member.age)) //
+				.select(Projections.constructor(TeamMemberDto.class,
+						member.userName, member.age)) //
+				.from(member)
+				.fetch();
+
+		for(TeamMemberDto memberDto : result) {
+			System.out.println("memberDto = " + memberDto);
+		}
+	}
+
+	@Test
+	public void findDtoTeamMember() {
+		List<TeamMemberDto> result = queryFactory
+				.select(Projections.fields(TeamMemberDto.class,
+						member.userName.as("teamMemberName"), // 맞지 않으면 .. 이렇게 as를 써야함
+						member.age))
+				.from(member)
+				.fetch();
+
+		for(TeamMemberDto memberDto : result) {
+			System.out.println("teamMemberDto = " + memberDto);
+		}
+	}
+
+	@Test
+	public void findDto() {
+		QMember subMember = new QMember("subMember");
+
+		List<TeamMemberDto> result = queryFactory
+				.select(Projections.fields(TeamMemberDto.class,
+						member.userName.as("teamMemberName"), // 아래와 같은 표현
+						//ExpressionUtils.as(member.userName, "teamMemberName"),
+						ExpressionUtils.as(
+								JPAExpressions
+									.select(subMember.age.max())
+									.from(subMember), "age")
+				))
+				.from(member)
+				.fetch();
+
+		for(TeamMemberDto memberDto : result) {
+			System.out.println("teamMemberDto = " + memberDto);
+		}
+	}
+
+	@Test
+	public void findQDtoByQueryProjection() {
+		// 오류 발생시 ..런타임에서 잡을수 있다는 치명적인 단점을 없앨수 있다는 장점
+		// 근데 이렇게하면 QueryDSL에 의존적이게 된다는 단점이 있음
+		List<MemberDto> result = queryFactory
+				.select(new QMemberDto(member.userName, member.age))
+				.from(member)
+				.fetch();
+
+		for (MemberDto memberDto : result) {
+			System.out.println("teamMemberDto = " + memberDto);
+		}
 	}
 }
