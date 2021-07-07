@@ -3,6 +3,7 @@ package study.querydsl;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -115,11 +116,11 @@ public class QuerydslBasicTest {
 				.fetch();
 
 		Member fetchOne = queryFactory
-				.selectFrom(QMember.member)
+				.selectFrom(member)
 				.fetchOne();
 
 		Member fetchFirst = queryFactory
-				.selectFrom(QMember.member)
+				.selectFrom(member)
 				//.limit(1).fetchOne()
 				.fetchFirst();
 
@@ -468,5 +469,28 @@ public class QuerydslBasicTest {
 		for(String s : result) {
 			System.out.println("s = " + s);
 		}
+	}
+
+	@Test
+	public void constant() {
+		List<Tuple> result = queryFactory
+				.select(member.userName, Expressions.constant("상수"))
+				.from(member)
+				.fetch();
+
+		for (Tuple tuple : result) {
+			System.out.println("tuple = " + tuple);
+		}
+	}
+
+	@Test
+	public void concat() {
+		String member = queryFactory
+				.select(QMember.member.userName.concat("&").concat(QMember.member.age.stringValue())) //ENUM 처리할때
+				.from(QMember.member)
+				.where(QMember.member.userName.eq("kang"))
+				.fetchOne();
+
+		System.out.println("member = " + member);
 	}
 }
