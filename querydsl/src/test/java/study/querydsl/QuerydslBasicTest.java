@@ -17,6 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 import study.querydsl.dto.MemberDto;
 import study.querydsl.dto.QMemberDto;
@@ -57,10 +58,10 @@ public class QuerydslBasicTest {
 		em.persist(teamA);
 		em.persist(teamB);
 
-		Member member1 = new Member("kang", 10, teamA);
-		Member member2 = new Member("kim", 20, teamA);
-		Member member3 = new Member("member3", 30, teamB);
-		Member member4 = new Member("member4", 40, teamB);
+		Member member1 = new Member("kangseongji", 10, teamA);
+		Member member2 = new Member("kangbabo", 20, teamA);
+		Member member3 = new Member("parkpp", 30, teamB);
+		Member member4 = new Member("leeds", 40, teamB);
 
 
 		em.persist(member1);
@@ -708,5 +709,103 @@ public class QuerydslBasicTest {
 
 	private BooleanExpression allEq(String nameCond, Integer ageCond) {
 		return userNameEq(nameCond).and(ageEq(ageCond));
+	}
+
+	@Test
+	@Commit
+	public void bulkUpdate() {
+		long updateCnt = queryFactory
+				.update(member)
+				.set(member.userName, "babo")
+				.execute();
+
+		List<Member> members = queryFactory
+				.selectFrom(member)
+				.fetch();
+
+		for(Member member: members) {
+			System.out.println(member.getUserName()); // 아무것도 변경되지 않음
+		}
+	}
+
+	@Test
+	@Commit
+	public void bulkUpdate2() {
+		long updateCnt = queryFactory
+				.update(member)
+				.set(member.userName, "babo")
+				.set(member.age, member.age.add(1))
+				.execute();
+
+		em.flush();
+		em.clear();
+
+		List<Member> members = queryFactory
+				.selectFrom(member)
+				.fetch();
+
+		for(Member member: members) {
+			System.out.println(member.getUserName());
+		}
+	}
+
+	@Test
+	@Commit
+	public void bulkUpdate3() {
+		long updateCnt = queryFactory
+				.update(member)
+				//.set(member.age, member.age.add(1))
+				.set(member.age, member.age.multiply(2))
+				.execute();
+
+		em.flush();
+		em.clear();
+
+		List<Member> members = queryFactory
+				.selectFrom(member)
+				.fetch();
+
+		for(Member member: members) {
+			System.out.println(member);
+		}
+	}
+
+	@Test
+	public void bulkUpdate4() {
+		long deleteCnt = queryFactory
+				.delete(member)
+				.execute();
+	}
+
+	@Test
+	public void sqlFunc() {
+		List<String> result = queryFactory
+				.select(Expressions.stringTemplate(
+						"function('replace', {0}, {1} , {2})",
+						member.userName, "kang", ""
+				))
+				.from(member)
+				.fetch();
+
+		for (String name : result) {
+			System.out.println(name);
+		}
+	}
+
+	@Test
+	public void sqlFunc2() {
+		List<String> result = queryFactory
+				.select(member.userName)
+				.from(member)
+//				.where(member.userName.eq(
+//						Expressions.stringTemplate(
+//								"function('lower', {0})",
+//								member.userName )))
+				.where(member.userName.eq(member.userName.lower()))
+				.fetch();
+
+		for (String name : result) {
+			System.out.println(name);
+		}
 	}
 }
