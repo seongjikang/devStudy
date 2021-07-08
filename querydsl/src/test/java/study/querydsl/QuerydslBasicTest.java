@@ -1,9 +1,12 @@
 package study.querydsl;
 
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.ExpressionUtils;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
@@ -644,5 +647,66 @@ public class QuerydslBasicTest {
 		for (MemberDto memberDto : result) {
 			System.out.println("teamMemberDto = " + memberDto);
 		}
+	}
+
+	@Test
+	public void dynamicQueryBooleanBuilder() {
+		String userNameParam = "kang";
+		Integer ageParam = 10;
+
+		List<Member> result = searchMemberCheckCond(userNameParam, ageParam);
+		assertThat(result.size()).isEqualTo(1);
+	}
+
+	private List<Member> searchMemberCheckCond(String nameCond, Integer ageCond) {
+		//BooleanBuilder builder = new BooleanBuilder(member.userName.eq(nameCond)); // 이런식으로 초기값 설정 가능
+		BooleanBuilder builder = new BooleanBuilder();
+		if (nameCond != null) {
+			builder.and(member.userName.eq(nameCond));
+		}
+
+		if (ageCond != null) {
+			builder.and(member.age.eq(ageCond));
+		}
+
+		return queryFactory
+				.selectFrom(member)
+				.where(builder)
+				.fetch();
+	}
+
+	@Test
+	public void dynamicQueryWhereParam() {
+		String userNameParam = "kang";
+		Integer ageParam = 10;
+
+		List<Member> result = searchMemberCheckCond2(userNameParam, ageParam);
+		assertThat(result.size()).isEqualTo(1);
+	}
+
+	private List<Member> searchMemberCheckCond2(String nameCond, Integer ageCond) {
+
+		return queryFactory
+				.selectFrom(member)
+				//.where(userNameEq(nameCond), ageEq(ageCond))
+				.where(allEq(nameCond, ageCond)) // 이런식으로 조립을해서 가능하다는 큰 장점 , 이렇게 만들어두면 다른 쿼리에서도 재활용할수 있는 장점
+				.fetch();
+	}
+
+	private BooleanExpression userNameEq(String nameCond) {
+//		if (nameCond != null ) {
+//			return  member.userName.eq(nameCond);
+//		} else {
+//			return null; // where에 null 이들어가면 무시됨.그걸이용해서 동적쿼리를 만듦
+//		}
+		return nameCond != null ? member.userName.eq(nameCond) : null;
+	}
+
+	private BooleanExpression ageEq(Integer ageCond) {
+		return ageCond != null ? member.age.eq(ageCond) : null;
+	}
+
+	private BooleanExpression allEq(String nameCond, Integer ageCond) {
+		return userNameEq(nameCond).and(ageEq(ageCond));
 	}
 }
